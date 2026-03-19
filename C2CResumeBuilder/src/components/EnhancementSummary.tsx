@@ -38,6 +38,11 @@ export default function EnhancementSummary({
           value={summary.bulletsUnchanged}
           color="slate"
         />
+        <StatCard
+          label="Removed"
+          value={summary.bulletsRemoved}
+          color="red"
+        />
       </div>
 
       {summary.keywordsAdded.length > 0 && (
@@ -73,7 +78,9 @@ export default function EnhancementSummary({
                         ? 'bg-blue-500/20 text-blue-300'
                         : section.changeType === 'expanded'
                           ? 'bg-purple-500/20 text-purple-300'
-                          : 'bg-green-500/20 text-green-300'
+                          : section.changeType === 'removed'
+                            ? 'bg-red-500/20 text-red-300'
+                            : 'bg-green-500/20 text-green-300'
                     }`}
                   >
                     {section.changeType}
@@ -87,8 +94,14 @@ export default function EnhancementSummary({
                   </p>
                 )}
                 <p className="text-slate-300">
-                  {section.enhancedText.slice(0, 120)}
-                  {section.enhancedText.length > 120 ? '...' : ''}
+                  {section.changeType === 'removed' ? (
+                    <span className="italic text-slate-500">Removed from document</span>
+                  ) : (
+                    <>
+                      {section.enhancedText.slice(0, 120)}
+                      {section.enhancedText.length > 120 ? '...' : ''}
+                    </>
+                  )}
                 </p>
               </div>
             ))}
@@ -123,6 +136,7 @@ function StatCard({
     teal: 'text-teal-400',
     blue: 'text-blue-400',
     green: 'text-green-400',
+    red: 'text-red-400',
     slate: 'text-slate-400',
   };
 

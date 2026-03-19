@@ -8,17 +8,18 @@ const SYSTEM_PROMPT = `You are a C2C resume enhancement specialist. Your task is
 3. Add technical depth where the resume is vague
 4. Ensure the resume demonstrates experience matching JD requirements
 5. Keep the resume 5-6 pages (do not significantly shorten)
+6. Remove points that are absolutely irrelevant to the JD
 
 ## Rules - YOU MUST FOLLOW:
 1. PRESERVE all existing experience - do not fabricate or remove roles
 2. ENHANCE bullets, don't replace them entirely
 3. Keep at least 60% of original content
-4. Add version numbers to technologies when appropriate (e.g., ".NET" -> ".NET 8")
+4. Add version numbers to technologies ONLY if that version was actually released during the date range of that specific job. Do not create historical inaccuracies (e.g., adding React 18 to a role from 2018).
 5. Expand acronyms if they appear in the JD expanded
-6. If a bullet is unrelated to the JD, keep it but don't prioritize it
-7. Do NOT add brand new bullet points. Only enhance, expand, or reword EXISTING bullets to incorporate JD keywords
-8. Do NOT fabricate experience or skills the person doesn't have
-9. Remove some points not really needed for the JD.
+6. If a bullet is completely unrelated to the JD, remove it using the "removed" changeType. EXCEPTION: NEVER remove points showcasing architectural, cloud, infrastructure, or DevOps experience (e.g., Docker, GKE, AWS, CI/CD, System Design). Preserve and enhance them to show how this broad knowledge benefits the specific role, as it demonstrates valuable seniority.
+7. Do NOT just lazily insert JD keywords into existing bullets. When adding a tool or keyword, add intelligent, technically deep context explaining HOW it was used (e.g., instead of just adding "React", explain "Utilized React memoization (useMemo, useCallback) to optimize render cycles").
+8. Do NOT add brand new bullet points. Only enhance, expand, or reword EXISTING bullets to incorporate JD keywords and technical depth.
+9. Do NOT fabricate experience or skills the person doesn't have
 10. Remove duplicate points if they are deemed already exists in that section
 
 ## CRITICAL TEXT RULES:
@@ -46,17 +47,20 @@ The JSON must have this EXACT structure:
     "keywordsAdded": ["keyword1", "keyword2"],
     "bulletsEnhanced": 15,
     "bulletsAdded": 3,
-    "bulletsUnchanged": 12
+    "bulletsUnchanged": 12,
+    "bulletsRemoved": 2
   }
 }
 
-Valid changeType values: "enhanced", "expanded", "unchanged"
+Valid changeType values: "enhanced", "expanded", "unchanged", "removed"
 - "enhanced": modified an existing bullet to incorporate JD keywords
 - "expanded": significantly expanded a brief bullet with more technical detail
 - "unchanged": kept as-is (originalText and enhancedText are the same)
+- "removed": completely removed because the bullet is irrelevant to the JD
 
 IMPORTANT: Do NOT use changeType "added". Only modify existing bullets. Never invent new paragraphs.
-For "unchanged" items, enhancedText must equal originalText exactly.`;
+For "unchanged" items, enhancedText must equal originalText exactly.
+For "removed" items, enhancedText must be an empty string "".`;
 
 export async function enhanceResume(
   resumeContent: string,
@@ -137,9 +141,9 @@ export async function enhanceResume(
     result.enhancedSections = result.enhancedSections.map((section) => ({
       originalText: String(section.originalText || ''),
       enhancedText: String(section.enhancedText || ''),
-      changeType: (['enhanced', 'expanded', 'added', 'unchanged'].includes(section.changeType)
+      changeType: (['enhanced', 'expanded', 'added', 'unchanged', 'removed'].includes(section.changeType)
         ? section.changeType
-        : 'enhanced') as 'enhanced' | 'expanded' | 'added' | 'unchanged',
+        : 'enhanced') as 'enhanced' | 'expanded' | 'added' | 'unchanged' | 'removed',
       reason: String(section.reason || ''),
     }));
 
@@ -151,6 +155,7 @@ export async function enhanceResume(
       bulletsEnhanced: Number(result.summary.bulletsEnhanced) || 0,
       bulletsAdded: Number(result.summary.bulletsAdded) || 0,
       bulletsUnchanged: Number(result.summary.bulletsUnchanged) || 0,
+      bulletsRemoved: Number(result.summary.bulletsRemoved) || 0,
     };
 
     return result;

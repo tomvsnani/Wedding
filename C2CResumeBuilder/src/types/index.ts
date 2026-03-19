@@ -3,7 +3,7 @@ import type JSZip from 'jszip';
 export interface EnhancedSection {
   originalText: string;
   enhancedText: string;
-  changeType: 'enhanced' | 'expanded' | 'added' | 'unchanged';
+  changeType: 'enhanced' | 'expanded' | 'added' | 'unchanged' | 'removed';
   reason: string;
 }
 
@@ -14,6 +14,7 @@ export interface EnhancementResult {
     bulletsEnhanced: number;
     bulletsAdded: number;
     bulletsUnchanged: number;
+    bulletsRemoved: number;
   };
 }
 

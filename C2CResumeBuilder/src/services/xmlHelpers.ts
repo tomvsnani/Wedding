@@ -218,12 +218,13 @@ export function applyEnhancements(
   enhancements: Array<{ originalText: string; enhancedText: string; changeType: string }>
 ): string {
   const paragraphs = findAllParagraphs(xml);
-  // Only consider paragraphs NOT inside tables for replacement
-  // (table content has complex structure that's risky to modify via string replacement)
-  const replaceableParagraphs = paragraphs.filter((p) => !p.isInTable);
+  // We can operate on all paragraphs safely now that we process backwards
+  // For 'removed' paragraphs in tables, if it's the only paragraph it might be invalid Word XML,
+  // but replacing its text with nothing while stripping numbering is safer than total deletion.
+  const replaceableParagraphs = paragraphs;
   const usedIndices = new Set<number>();
-  let result = xml;
-  let offset = 0;
+  
+  const matchesToApply: { match: ParagraphMatch; newXml: string }[] = [];
 
   for (const enhancement of enhancements) {
     if (enhancement.changeType === 'unchanged' || enhancement.changeType === 'added') {
@@ -265,17 +266,27 @@ export function applyEnhancements(
     if (bestMatch && bestIdx >= 0) {
       usedIndices.add(bestIdx);
 
-      const newParagraphXml = replaceParagraphTextInString(
-        bestMatch.fullXml,
-        enhancement.enhancedText
-      );
-
-      const adjStart = bestMatch.startIndex + offset;
-      const adjEnd = bestMatch.endIndex + offset;
-
-      result = result.substring(0, adjStart) + newParagraphXml + result.substring(adjEnd);
-      offset += newParagraphXml.length - bestMatch.fullXml.length;
+      let newParagraphXml = '';
+      if (enhancement.changeType === 'removed') {
+        newParagraphXml = '';
+      } else {
+        newParagraphXml = replaceParagraphTextInString(
+          bestMatch.fullXml,
+          enhancement.enhancedText
+        );
+      }
+      
+      matchesToApply.push({ match: bestMatch, newXml: newParagraphXml });
     }
+  }
+
+  // Sort matches by startIndex descending so replacements don't invalidate earlier indices
+  matchesToApply.sort((a, b) => b.match.startIndex - a.match.startIndex);
+
+  let result = xml;
+  // Apply from end to start
+  for (const { match, newXml } of matchesToApply) {
+    result = result.substring(0, match.startIndex) + newXml + result.substring(match.endIndex);
   }
 
   // Skip 'added' items — inserting new paragraphs risks formatting issues

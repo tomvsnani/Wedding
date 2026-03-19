@@ -110,10 +110,9 @@ function replaceParagraphTextInString(paragraphXml, newText) {
 
 function applyEnhancements(xml, enhancements) {
   const paragraphs = findAllParagraphs(xml);
-  const replaceableParagraphs = paragraphs.filter(p => !p.isInTable);
+  const replaceableParagraphs = paragraphs;
   const usedIndices = new Set();
-  let result = xml;
-  let offset = 0;
+  const matchesToApply = [];
 
   for (const enhancement of enhancements) {
     if (enhancement.changeType === 'unchanged' || enhancement.changeType === 'added') continue;
@@ -146,14 +145,23 @@ function applyEnhancements(xml, enhancements) {
 
     if (bestMatch && bestIdx >= 0) {
       usedIndices.add(bestIdx);
-      const newParagraphXml = replaceParagraphTextInString(bestMatch.fullXml, enhancement.enhancedText);
-      const adjStart = bestMatch.startIndex + offset;
-      const adjEnd = bestMatch.endIndex + offset;
-      result = result.substring(0, adjStart) + newParagraphXml + result.substring(adjEnd);
-      offset += newParagraphXml.length - bestMatch.fullXml.length;
+      let newParagraphXml = '';
+      if (enhancement.changeType === 'removed') {
+        newParagraphXml = '';
+      } else {
+        newParagraphXml = replaceParagraphTextInString(bestMatch.fullXml, enhancement.enhancedText);
+      }
+      matchesToApply.push({ match: bestMatch, newXml: newParagraphXml });
     } else {
       console.log(`  NO MATCH: "${enhancement.originalText.substring(0, 60)}..."`);
     }
+  }
+
+  matchesToApply.sort((a, b) => b.match.startIndex - a.match.startIndex);
+
+  let result = xml;
+  for (const { match, newXml } of matchesToApply) {
+    result = result.substring(0, match.startIndex) + newXml + result.substring(match.endIndex);
   }
 
   const addedItems = enhancements.filter(e => e.changeType === 'added');
@@ -218,17 +226,17 @@ async function runTests() {
   const noopResult = applyEnhancements(originalXml, []);
   assert(noopResult === originalXml, 'No-op produces identical XML');
 
-  // Test 2: Table paragraphs are excluded from replacement
-  console.log('\n--- Test 2: Table paragraph exclusion ---');
+  // Test 2: Table paragraphs are modified
+  console.log('\\n--- Test 2: Table paragraph inclusion ---');
   const tableParaText = tableParas[0]?.text || '';
   if (tableParaText) {
     const tableEnhancement = [{
       originalText: tableParaText,
-      enhancedText: 'SHOULD NOT APPEAR',
+      enhancedText: 'SHOULD NOW APPEAR',
       changeType: 'enhanced',
     }];
     const tableResult = applyEnhancements(originalXml, tableEnhancement);
-    assert(!tableResult.includes('SHOULD NOT APPEAR'), 'Table paragraphs are not modified');
+    assert(tableResult.includes('SHOULD NOW APPEAR'), 'Table paragraphs are successfully modified');
   }
 
   // Test 3: Special characters - apostrophes (Consul's)
@@ -351,6 +359,18 @@ async function runTests() {
   assert(reFinalXml.includes('</w:body>'), 'Final output has valid body close');
   assert(reFinalXml.includes('</w:document>'), 'Final output has valid document close');
   console.log('  Wrote /tmp/test_claude_sim.docx');
+
+  // Test 9: Removed paragraph
+  console.log('\\n--- Test 9: Removed paragraph ---');
+  const removedEnhancement = [{
+    originalText: nonTableParas[1].text,
+    enhancedText: '',
+    changeType: 'removed',
+  }];
+  const removedResult = applyEnhancements(originalXml, removedEnhancement);
+  const removedParas = findAllParagraphs(removedResult);
+  assert(removedParas.length === paragraphs.length - 1, 'Paragraph count decreased by 1 after removal');
+  assert(!removedResult.includes(escapeXmlText(nonTableParas[1].text)), 'Removed text should not be found');
 
   // Summary
   console.log(`\n=== Results: ${passed} passed, ${failed} failed ===`);

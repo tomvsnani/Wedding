@@ -1,0 +1,49 @@
+=== DOCX Enhancement Tests ===
+
+Total paragraphs: 251
+Non-table with text: 186
+In-table with text: 38
+
+--- Test 1: No-op roundtrip ---
+  PASS: No-op produces identical XML
+
+--- Test 2: Table paragraph exclusion ---
+  FAIL: Table paragraphs are not modified
+
+--- Test 3: Special character handling ---
+  Found paragraph with apostrophe: "Utilized SonarQube's security plugin to identify vulnerabili..."
+  PASS: No double-escaped apostrophes
+  PASS: No double-escaped ampersands
+  PASS: Result is still parseable after special char replacement
+
+--- Test 4: XML-sensitive characters in replacement ---
+  PASS: Angle brackets are properly escaped
+  PASS: Ampersand is properly escaped
+  PASS: Raw angle brackets are NOT in output
+
+--- Test 5: Multiple replacement offset handling ---
+  PASS: Paragraph count preserved after multi-replace
+  PASS: All 10 replacements applied (got 10)
+
+--- Test 6: Added paragraph positioning ---
+  PASS: Added paragraph is present
+  PASS: Added paragraph is before sectPr
+
+--- Test 7: Full DOCX generation ---
+  Wrote /tmp/test_full_enhanced.docx
+  PASS: Output DOCX has content
+  PASS: Output XML starts with declaration
+  PASS: Output XML has closing document tag
+  PASS: Output XML has parseable paragraphs
+
+--- Test 8: Claude response simulation ---
+  PASS: Claude-style enhancement applied
+  PASS: Claude-style addition applied
+  PASS: Final output has valid body close
+  PASS: Final output has valid document close
+  Wrote /tmp/test_claude_sim.docx
+\n--- Test 9: Removed paragraph ---
+  FAIL: Paragraph count decreased by 1 after removal
+  PASS: Removed text should not be found
+
+=== Results: 20 passed, 2 failed ===
