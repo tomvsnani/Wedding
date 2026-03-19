@@ -1,6 +1,6 @@
 import type { EnhancementResult } from '../types/index.js';
 
-const SYSTEM_PROMPT = `You are a C2C resume enhancement specialist. Your task is to enhance an existing resume to better match a specific job description, you have 15 years of professional experience in architecting developing and hiring, tailor the resume for ATS and keyword match and best possible hiring.
+const SYSTEM_PROMPT = `You are an elite C2C (Corp-to-Corp) Resume Optimizer and Tech Recruiter. Your task is to enhance an existing resume to perfectly match a specific job description (JD) to secure lucrative contracting roles.
 
 ## Your Goals:
 1. Identify keywords, technologies, and skills from the job description
@@ -18,9 +18,8 @@ const SYSTEM_PROMPT = `You are a C2C resume enhancement specialist. Your task is
 5. Expand acronyms if they appear in the JD expanded
 6. If a bullet is completely unrelated to the JD, remove it using the "removed" changeType. EXCEPTION: NEVER remove points showcasing architectural, cloud, infrastructure, or DevOps experience (e.g., Docker, GKE, AWS, CI/CD, System Design). Preserve and enhance them to show how this broad knowledge benefits the specific role, as it demonstrates valuable seniority.
 7. Do NOT just lazily insert JD keywords into existing bullets. When adding a tool or keyword, add intelligent, technically deep context explaining HOW it was used (e.g., instead of just adding "React", explain "Utilized React memoization (useMemo, useCallback) to optimize render cycles").
-8. Do NOT add brand new bullet points. Only enhance, expand, or reword EXISTING bullets to incorporate JD keywords and technical depth.
-9. Do NOT fabricate experience or skills the person doesn't have
-10. Remove duplicate points if they are deemed already exists in that section
+8. Do NOT fabricate experience or skills the person doesn't have
+9. Remove duplicate points if they are deemed already exists in that section
 
 ## CRITICAL TEXT RULES:
 - The "originalText" field MUST be the EXACT text from the resume, character-for-character
@@ -31,10 +30,15 @@ const SYSTEM_PROMPT = `You are a C2C resume enhancement specialist. Your task is
 - Do NOT include any special Unicode characters in enhancedText
 
 ## Output Format:
-You MUST return ONLY a valid JSON object. No markdown, no code fences, no explanations before or after.
+You MUST return ONLY a valid JSON object. No markdown, no code fences.
 The JSON must have this EXACT structure:
 
 {
+  "executiveSummary": "Generated 3-sentence summary highlighting ROI, perfectly matched to the JD...",
+  "atsKeywords": "React 18, Node.js, AWS, Kubernetes, CI/CD",
+  "atsScore": 85,
+  "atsScoreReasoning": "Lost points because the original resume lacked explicit mentions of CI/CD pipelines and Jenkins, though they had strong AWS experience.",
+  "c2cMatchEvaluation": "Strong C2C match. The candidate has 8 years of React and heavy architectural experience, making them an easy plug-and-play senior UI lead.",
   "enhancedSections": [
     {
       "originalText": "the exact original text from resume paragraph",
@@ -130,6 +134,14 @@ export async function enhanceResume(
     const result: EnhancementResult = JSON.parse(jsonStr);
 
     // Validate the response structure
+    if (typeof result.atsScore !== 'number') {
+      result.atsScore = 0;
+    }
+    result.executiveSummary = result.executiveSummary || '';
+    result.atsKeywords = result.atsKeywords || '';
+    result.atsScoreReasoning = result.atsScoreReasoning || '';
+    result.c2cMatchEvaluation = result.c2cMatchEvaluation || '';
+
     if (!result.enhancedSections || !Array.isArray(result.enhancedSections)) {
       throw new Error('Invalid response structure: missing enhancedSections array');
     }

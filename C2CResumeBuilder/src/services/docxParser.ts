@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import type { DocxContent, EnhancedSection } from '../types/index.js';
+import type { DocxContent, EnhancementResult } from '../types/index.js';
 import { extractTextFromXml, applyEnhancements } from './xmlHelpers.js';
 
 /**
@@ -33,9 +33,14 @@ export async function extractDocxContent(file: File): Promise<DocxContent> {
 export async function replaceContent(
   zip: JSZip,
   originalXml: string,
-  enhancedSections: EnhancedSection[]
+  result: EnhancementResult
 ): Promise<Blob> {
-  const newXml = applyEnhancements(originalXml, enhancedSections);
+  const newXml = applyEnhancements(
+    originalXml, 
+    result.enhancedSections, 
+    result.executiveSummary, 
+    result.atsKeywords
+  );
   zip.file('word/document.xml', newXml);
 
   return await zip.generateAsync({

@@ -215,7 +215,9 @@ function validateXml(xml: string): { valid: boolean; error?: string } {
  */
 export function applyEnhancements(
   xml: string,
-  enhancements: Array<{ originalText: string; enhancedText: string; changeType: string }>
+  enhancements: Array<{ originalText: string; enhancedText: string; changeType: string }>,
+  executiveSummary?: string,
+  atsKeywords?: string
 ): string {
   const paragraphs = findAllParagraphs(xml);
   // We can operate on all paragraphs safely now that we process backwards
@@ -287,6 +289,29 @@ export function applyEnhancements(
   // Apply from end to start
   for (const { match, newXml } of matchesToApply) {
     result = result.substring(0, match.startIndex) + newXml + result.substring(match.endIndex);
+  }
+
+  if (executiveSummary || atsKeywords) {
+    const bodyStartIdx = result.indexOf('<w:body>');
+    if (bodyStartIdx !== -1) {
+      const insertPoint = result.indexOf('>', bodyStartIdx) + 1;
+      let injectXml = '';
+      
+      const createPara = (text: string) => `<w:p><w:r><w:t xml:space="preserve">${escapeXmlText(text)}</w:t></w:r></w:p>`;
+
+      if (executiveSummary) {
+        injectXml += createPara('== EXECUTIVE SUMMARY ==');
+        injectXml += createPara(executiveSummary);
+        injectXml += createPara('');
+      }
+      if (atsKeywords) {
+        injectXml += createPara('== ATS KEYWORDS ==');
+        injectXml += createPara(atsKeywords);
+        injectXml += createPara('');
+      }
+      
+      result = result.substring(0, insertPoint) + injectXml + result.substring(insertPoint);
+    }
   }
 
   // Skip 'added' items — inserting new paragraphs risks formatting issues

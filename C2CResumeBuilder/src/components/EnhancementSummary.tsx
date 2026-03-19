@@ -18,6 +18,12 @@ export default function EnhancementSummary({
       <h2 className="text-lg font-semibold text-slate-200 mb-4">Enhancement Summary</h2>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-slate-900/50 xl:col-span-1 rounded-lg p-3 text-center border-b-2 border-teal-500">
+          <p className={`text-2xl font-bold ${result.atsScore >= 80 ? 'text-teal-400' : result.atsScore >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
+            {result.atsScore || 0}%
+          </p>
+          <p className="text-xs text-slate-500 mt-1">ATS JD Match</p>
+        </div>
         <StatCard
           label="Keywords Added"
           value={summary.keywordsAdded.length}
@@ -57,6 +63,46 @@ export default function EnhancementSummary({
                 {keyword}
               </span>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* C2C Injected Blocks & Evaluation */}
+      {(result.executiveSummary || result.atsKeywords || result.c2cMatchEvaluation) && (
+        <div className="bg-slate-900/40 border border-slate-700/50 rounded-lg p-5 mb-6">
+          <h3 className="text-sm font-semibold text-slate-300 mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
+            C2C Evaluation & Injected Blocks
+          </h3>
+          
+          {result.c2cMatchEvaluation && (
+            <div className="mb-5 bg-indigo-900/20 p-4 rounded-lg border border-indigo-500/20">
+              <h4 className="text-xs font-bold text-indigo-400 mb-1 flex items-center gap-2">
+                <span className="text-lg">🎯</span> Vendor Fit Assessment
+              </h4>
+              <p className="text-indigo-200/90 text-sm leading-relaxed">{result.c2cMatchEvaluation}</p>
+            </div>
+          )}
+
+          {result.atsScoreReasoning && (
+            <div className="mb-5 bg-slate-800/60 p-4 rounded-lg border border-slate-700">
+              <h4 className="text-xs font-bold text-slate-400 mb-1">ATS Score Reasoning</h4>
+              <p className="text-slate-300 text-sm leading-relaxed italic">"{result.atsScoreReasoning}"</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {result.executiveSummary && (
+              <div className="bg-slate-900 rounded p-3 border border-slate-800/50">
+                <h4 className="text-[11px] font-bold text-teal-400 mb-2 uppercase tracking-wider">Injected Executive Summary</h4>
+                <p className="text-slate-300 text-sm leading-relaxed">{result.executiveSummary}</p>
+              </div>
+            )}
+            {result.atsKeywords && (
+              <div className="bg-slate-900 rounded p-3 border border-slate-800/50">
+                <h4 className="text-[11px] font-bold text-amber-400 mb-2 uppercase tracking-wider">Injected Keywords</h4>
+                <p className="text-slate-300 text-sm font-mono">{result.atsKeywords}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

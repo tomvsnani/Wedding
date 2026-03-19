@@ -108,7 +108,7 @@ function replaceParagraphTextInString(paragraphXml, newText) {
   );
 }
 
-function applyEnhancements(xml, enhancements) {
+function applyEnhancements(xml, enhancements, executiveSummary, atsKeywords) {
   const paragraphs = findAllParagraphs(xml);
   const replaceableParagraphs = paragraphs;
   const usedIndices = new Set();
@@ -162,6 +162,27 @@ function applyEnhancements(xml, enhancements) {
   let result = xml;
   for (const { match, newXml } of matchesToApply) {
     result = result.substring(0, match.startIndex) + newXml + result.substring(match.endIndex);
+  }
+
+  if (executiveSummary || atsKeywords) {
+    const bodyStartIdx = result.indexOf('<w:body>');
+    if (bodyStartIdx !== -1) {
+      const insertPoint = result.indexOf('>', bodyStartIdx) + 1;
+      let injectXml = '';
+      const createPara = (text) => `<w:p><w:r><w:t xml:space="preserve">${escapeXmlText(text)}</w:t></w:r></w:p>`;
+
+      if (executiveSummary) {
+        injectXml += createPara('== EXECUTIVE SUMMARY ==');
+        injectXml += createPara(executiveSummary);
+        injectXml += createPara('');
+      }
+      if (atsKeywords) {
+        injectXml += createPara('== ATS KEYWORDS ==');
+        injectXml += createPara(atsKeywords);
+        injectXml += createPara('');
+      }
+      result = result.substring(0, insertPoint) + injectXml + result.substring(insertPoint);
+    }
   }
 
   const addedItems = enhancements.filter(e => e.changeType === 'added');
@@ -371,6 +392,14 @@ async function runTests() {
   const removedParas = findAllParagraphs(removedResult);
   assert(removedParas.length === paragraphs.length - 1, 'Paragraph count decreased by 1 after removal');
   assert(!removedResult.includes(escapeXmlText(nonTableParas[1].text)), 'Removed text should not be found');
+
+  // Test 10: Inject C2C Blocks
+  console.log('\\n--- Test 10: Inject C2C Blocks ---');
+  const c2cResult = applyEnhancements(originalXml, [], 'MOCK EXEC SUMMARY', 'MOCK, ATS, KEYWORDS');
+  assert(c2cResult.includes('== EXECUTIVE SUMMARY =='), 'Executive summary injected successfully');
+  assert(c2cResult.includes('MOCK, ATS, KEYWORDS'), 'ATS keywords injected successfully');
+  const c2cParas = findAllParagraphs(c2cResult);
+  assert(c2cParas.length > paragraphs.length, 'Injected content increases total paragraphs');
 
   // Summary
   console.log(`\n=== Results: ${passed} passed, ${failed} failed ===`);

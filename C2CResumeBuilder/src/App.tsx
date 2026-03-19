@@ -76,7 +76,7 @@ function App() {
       const blob = await replaceContent(
         docxData.zip,
         docxData.documentXml,
-        result.enhancedSections
+        result
       );
 
       const url = URL.createObjectURL(blob);

@@ -8,6 +8,11 @@ export interface EnhancedSection {
 }
 
 export interface EnhancementResult {
+  executiveSummary: string;
+  atsKeywords: string;
+  atsScore: number;
+  atsScoreReasoning: string;
+  c2cMatchEvaluation: string;
   enhancedSections: EnhancedSection[];
   summary: {
     keywordsAdded: string[];
