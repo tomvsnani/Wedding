@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm run:*)",
+      "Bash(node test_docx.js)",
+      "Bash(mv test_docx.js test_docx.cjs)",
+      "Bash(node test_docx.cjs)",
+      "Bash(node test_docx_roundtrip.cjs)",
+      "Bash(node check_structures.cjs)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}
