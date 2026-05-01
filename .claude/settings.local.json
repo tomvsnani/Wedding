@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(cp ../.env .)",
+      "Bash(node index.js)",
+      "Bash(disown)",
+      "Bash(curl -s http://localhost:3001/api/event)",
+      "Bash(npx vite *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(taskkill //F //IM node.exe)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

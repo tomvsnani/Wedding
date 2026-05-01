@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #b8860b;
+  --color-gold-light: #d4a843;
+  --color-gold-dark: #8b6508;
+  --color-maroon: #8b0000;
+  --color-maroon-light: #a52a2a;
+  --color-cream: #fffdf5;
+  --color-cream-dark: #f5f0e1;
+  --color-blush: #fff5f5;
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-script: 'Great Vibes', cursive;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-cream);
+  color: #3d2b1f;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 1.5rem auto;
+  width: 100%;
+}
+.ornament::before,
+.ornament::after {
+  content: '';
+  height: 1px;
+  width: 80px;
+  background: linear-gradient(to right, transparent, var(--color-gold), transparent);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.gold-shimmer {
+  background: linear-gradient(90deg, var(--color-gold-dark), var(--color-gold-light), #fff5c0, var(--color-gold-light), var(--color-gold-dark));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.paisley-bg {
+  position: relative;
+  overflow: hidden;
+}
+.paisley-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-8 0-15 7-15 15 0 12 15 25 15 25s15-13 15-25c0-8-7-15-15-15z' fill='%238b0000' fill-opacity='1'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.corner-decor {
+  position: relative;
+}
+.corner-decor::before,
+.corner-decor::after {
+  content: '✦';
+  position: absolute;
+  color: var(--color-gold);
+  font-size: 1.5rem;
+  opacity: 0.4;
+}
+.corner-decor::before { top: 12px; left: 16px; }
+.corner-decor::after { bottom: 12px; right: 16px; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
+::-webkit-scrollbar-thumb { background: var(--color-gold); border-radius: 3px; }
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.15);
+}
+
+.section-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-container {
+    padding: 0 2rem;
+  }
+}
