@@ -7,6 +7,8 @@ import Countdown from './components/Countdown';
 import RsvpForm from './components/RsvpForm';
 import MapSection from './components/MapSection';
 import Footer from './components/Footer';
+import FallingPetals from './components/FallingPetals';
+import Families from './components/Families';
 
 const API = '/api';
 
@@ -40,7 +42,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-cream">
+      <FallingPetals count={15} />
       <Hero event={event} />
+      <Families />
       <Countdown targetDate={event.wedding_date} targetTime={event.wedding_time} />
       <EventDetails event={event} />
       <RsvpForm event={event} invite={invite} />

@@ -6,8 +6,8 @@
   --color-gold-dark: #8b6508;
   --color-maroon: #8b0000;
   --color-maroon-light: #a52a2a;
-  --color-cream: #fffdf5;
-  --color-cream-dark: #f5f0e1;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #f5edd8;
   --color-blush: #fff5f5;
   --font-heading: 'Cormorant Garamond', Georgia, serif;
   --font-script: 'Great Vibes', cursive;
@@ -104,4 +104,47 @@ input:focus, textarea:focus, select:focus {
   .section-container {
     padding: 0 2rem;
   }
+}
+
+/* Falling petals animation */
+@keyframes petalFall {
+  0% {
+    transform: translateY(-5vh) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 0.8; }
+  100% {
+    transform: translateY(105vh) rotate(540deg) scale(0.6);
+    opacity: 0;
+  }
+}
+@keyframes petalSway {
+  0%, 100% { margin-left: 0; }
+  25% { margin-left: 40px; }
+  75% { margin-left: -40px; }
+}
+.petal-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  overflow: hidden;
+}
+.petal {
+  position: absolute;
+  top: -30px;
+  pointer-events: none;
+  animation: petalFall linear infinite, petalSway ease-in-out infinite;
+}
+.petal svg {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+/* Gold double border */
+.gold-border-outer {
+  border: 2px solid #B8860B;
+}
+.gold-border-inner {
+  border: 0.8px solid #D4A017;
 }

@@ -36,30 +36,35 @@ export default function Countdown({ targetDate, targetTime }) {
   }, [targetDate, targetTime]);
 
   const blocks = [
-    { label: 'Days', value: timeLeft.days },
-    { label: 'Hours', value: timeLeft.hours },
-    { label: 'Minutes', value: timeLeft.minutes },
-    { label: 'Seconds', value: timeLeft.seconds },
+    { label: 'DAYS', value: timeLeft.days },
+    { label: 'HOURS', value: timeLeft.hours },
+    { label: 'MINS', value: timeLeft.minutes },
+    { label: 'SECS', value: timeLeft.seconds },
   ];
 
   return (
-    <section className="w-full py-16 md:py-20 bg-gradient-to-b from-cream to-cream-dark">
+    <section className="w-full">
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        className="section-container text-center"
+        className="bg-maroon py-10 md:py-14"
       >
-        <p className="text-gold tracking-[0.3em] uppercase text-xs md:text-sm mb-10">Counting Down To</p>
-        <div className="flex justify-center gap-4 sm:gap-6 md:gap-10">
-          {blocks.map((b) => (
-            <div key={b.label} className="flex flex-col items-center">
-              <div className="w-18 h-18 sm:w-22 sm:h-22 md:w-28 md:h-28 rounded-xl bg-white border border-gold/30 shadow-lg flex items-center justify-center mb-3">
-                <span className="font-heading text-3xl sm:text-4xl md:text-5xl text-maroon font-bold">
+        <p className="text-center text-white/70 tracking-[0.3em] uppercase text-xs md:text-sm mb-8 font-body">
+          Counting Down to the Celebration
+        </p>
+        <div className="flex justify-center items-center gap-2 sm:gap-4 md:gap-6 px-4">
+          {blocks.map((b, i) => (
+            <div key={b.label} className="flex items-center gap-2 sm:gap-4 md:gap-6">
+              <div className="flex flex-col items-center">
+                <span className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-bold leading-none">
                   {String(b.value).padStart(2, '0')}
                 </span>
+                <span className="text-white/50 text-[10px] sm:text-xs tracking-[0.2em] mt-2 font-body">{b.label}</span>
               </div>
-              <span className="text-gold-dark text-[10px] sm:text-xs md:text-sm tracking-widest uppercase font-medium">{b.label}</span>
+              {i < blocks.length - 1 && (
+                <span className="text-gold-light text-2xl md:text-3xl font-bold mb-4">:</span>
+              )}
             </div>
           ))}
         </div>
