@@ -1,0 +1,6 @@
+node_modules
+*.db
+.env
+server/public
+.git
+.claude
