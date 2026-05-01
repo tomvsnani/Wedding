@@ -9,7 +9,7 @@ export default function Footer({ event }) {
     <footer className="w-full py-14 md:py-16 bg-maroon text-white/80">
       <div className="section-container text-center">
         <h3 className="font-script text-3xl sm:text-4xl md:text-5xl text-gold-light mb-4">
-          {event.groom_name.split(' ')[0]} & {event.bride_name.split('(')[0].trim()}
+          {event.groom_name} & {event.bride_name}
         </h3>
         <p className="text-sm text-white/50 mb-8">
           {new Date(event.wedding_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}

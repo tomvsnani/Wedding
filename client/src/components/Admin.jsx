@@ -240,7 +240,7 @@ export default function Admin() {
                 { key: 'venue_address', label: 'Venue Address' },
                 { key: 'venue_lat', label: 'Latitude' },
                 { key: 'venue_lng', label: 'Longitude' },
-                { key: 'rsvp_deadline', label: 'RSVP Deadline', type: 'date' },
+                { key: 'rsvp_deadline', label: 'RSVP Deadline', type: 'datetime-local' },
                 { key: 'invitation_message', label: 'Invitation Message', textarea: true },
               ].map(f => (
                 <div key={f.key}>

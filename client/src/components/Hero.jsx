@@ -36,11 +36,11 @@ export default function Hero({ event }) {
         {/* Couple Names */}
         <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp} className="text-center mb-4 w-full">
           <h1 className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl gold-shimmer leading-tight">
-            {event.groom_name.split(' ')[0]}
+            {event.groom_name}
           </h1>
           <p className="font-script text-3xl md:text-4xl text-gold my-2">&</p>
           <h1 className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl gold-shimmer leading-tight">
-            Sahasra(Sruthi) Mattapelly
+            {event.bride_name}
           </h1>
         </motion.div>
 
