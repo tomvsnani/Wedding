@@ -6,6 +6,7 @@ import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import { stringify } from 'csv-stringify/sync';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -53,7 +54,7 @@ try { db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_rsvps_email ON rsvps(email)
 const defaults = {
   rsvp_deadline: process.env.RSVP_DEADLINE || '2026-05-06T23:59:59',
   groom_name: 'Ramu Pinninti',
-  bride_name: 'Sahasra(Sruthi) Mattapelli',
+  bride_name: 'Sahasra(Sruthi) Mattapelly',
   wedding_date: '2026-05-09',
   wedding_time: '10:35 AM',
   venue_name: 'Lotus Banquets',
@@ -145,6 +146,36 @@ app.get('/api/event', (req, res) => {
   const event = {};
   for (const k of keys) event[k] = getSetting(k);
   res.json(event);
+});
+
+// List photos from a folder inside photos/
+const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif', '.svg']);
+
+// Check both server/public and client/public for photos (dev vs prod)
+const getPhotosDir = (folder) => {
+  const serverDir = path.join(__dirname, 'public', 'photos', folder);
+  const clientDir = path.join(__dirname, '..', 'client', 'public', 'photos', folder);
+  if (fs.existsSync(serverDir) && fs.readdirSync(serverDir).length > 0) return serverDir;
+  if (fs.existsSync(clientDir)) return clientDir;
+  return serverDir;
+};
+
+app.get('/api/photos/:folder', (req, res) => {
+  const folder = req.params.folder;
+  // Prevent path traversal
+  if (folder.includes('..') || folder.includes('/') || folder.includes('\\')) {
+    return res.status(400).json({ error: 'Invalid folder' });
+  }
+  const dir = getPhotosDir(folder);
+  try {
+    if (!fs.existsSync(dir)) return res.json([]);
+    const files = fs.readdirSync(dir)
+      .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    res.json(files.map(f => `/photos/${folder}/${f}`));
+  } catch {
+    res.json([]);
+  }
 });
 
 app.get('/api/invite/:id', (req, res) => {
