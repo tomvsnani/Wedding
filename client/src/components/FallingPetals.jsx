@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-const petalColors = ['#D4A0A0', '#C9958A', '#E8C4B0', '#D4A843', '#C48B6B', '#B87E6A'];
+const petalColors = ['#C4706F', '#B5635A', '#C98A6E', '#B8860B', '#A8624A', '#9E5B4A'];
 
 export default function FallingPetals({ count = 18 }) {
   const petals = useMemo(() =>
@@ -10,10 +10,10 @@ export default function FallingPetals({ count = 18 }) {
       size: 14 + Math.random() * 14,
       fallDuration: 10 + Math.random() * 15,
       swayDuration: 3 + Math.random() * 5,
-      delay: Math.random() * 12,
+      delay: Math.random() * 2,
       color: petalColors[i % petalColors.length],
       rotation: Math.random() * 360,
-      opacity: 0.5 + Math.random() * 0.4,
+      opacity: 0.7 + Math.random() * 0.3,
     })), [count]
   );
 

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Hero from './components/Hero';
 import EventDetails from './components/EventDetails';
 import Countdown from './components/Countdown';
+import OurStory from './components/OurStory';
+import Gallery from './components/Gallery';
 import RsvpForm from './components/RsvpForm';
 import MapSection from './components/MapSection';
 import Footer from './components/Footer';
@@ -47,6 +49,8 @@ export default function App() {
       <Families />
       <Countdown targetDate={event.wedding_date} targetTime={event.wedding_time} />
       <EventDetails event={event} />
+      <OurStory />
+      <Gallery />
       <RsvpForm event={event} invite={invite} />
       <MapSection event={event} />
       <Footer event={event} />

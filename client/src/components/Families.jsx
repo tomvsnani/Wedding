@@ -10,7 +10,7 @@ export default function Families() {
         className="section-container text-center"
       >
         <p className="text-gold tracking-[0.3em] uppercase text-xs md:text-sm mb-8 font-body">
-          Blessed by their Families
+          Blessed by
         </p>
 
         <div className="flex flex-col md:flex-row justify-center gap-10 md:gap-20 max-w-3xl mx-auto">
